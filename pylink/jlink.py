@@ -1027,6 +1027,18 @@ class JLink(object):
         if verbose:
             self.exec_command('EnableRemarks = 1')
 
+        # Determine device name which is only partial of supported name
+        for index in range(self.num_supported_devices()):
+            device = self.supported_device(index)
+            # Makes a partial search of device name
+            if chip_name.lower() in device.name.lower():
+                chip_name = device.name
+                self._device = device
+                break
+        else:
+            raise errors.JLinkException('Cannot find device name %s in JLINKARM supported.' % chip_name)
+
+
         # This is weird but is currently the only way to specify what the
         # target is to the J-Link.
         self.exec_command('Device = %s' % chip_name)
